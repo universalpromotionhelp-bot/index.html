@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>मेरा कलर प्रेडिक्शन गेम</title>
+    <style>
+        body { font-family: 'Poppins', sans-serif; text-align: center; background: #1a1a1a; color: white; }
+        .timer-box { font-size: 40px; color: #ffcc00; margin: 20px; border: 2px solid #ffcc00; display: inline-block; padding: 10px 30px; border-radius: 50px; }
+        .color-btns button { width: 80px; height: 40px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .green { background: #2ecc71; color: white; }
+        .red { background: #e74c3c; color: white; }
+        .violet { background: #9b59b6; color: white; }
+        .big-small button { width: 120px; height: 50px; background: #3498db; color: white; border: none; margin: 10px; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        .wallet { font-size: 24px; margin-bottom: 20px; }
+        .result-log { margin-top: 30px; background: #333; padding: 20px; border-radius: 10px; width: 300px; margin-left: auto; margin-right: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>Color Prediction Game</h1>
+    
+    <div class="wallet">बैलेंस: ₹<span id="balance">1000</span></div>
+
+    <div class="timer-box">
+        अगला राउंड: <span id="timer">01:00</span>
+    </div>
+
+    <div class="color-btns">
+        <button class="green" onclick="bet('Green')">Green</button>
+        <button class="violet" onclick="bet('Violet')">Violet</button>
+        <button class="red" onclick="bet('Red')">Red</button>
+    </div>
+
+    <div class="big-small">
+        <button onclick="bet('Big')">BIG</button>
+        <button onclick="bet('Small')">SMALL</button>
+    </div>
+
+    <p id="bet-info" style="color: #ffcc00;"></p>
+
+    <div class="result-log">
+        <h3>पिछले नतीजे</h3>
+        <ul id="history" style="list-style: none; padding: 0;">
+            <li>प्रतीक्षा करें...</li>
+        </ul>
+    </div>
+
+    <script>
+        let timeLeft = 60; // 1 मिनट (60 सेकंड)
+        let balance = 1000;
+        let currentBet = null;
+
+        // टाइमर चलाने का फंक्शन
+        const timerElement = document.getElementById('timer');
+        setInterval(() => {
+            if (timeLeft <= 0) {
+                calculateResult();
+                timeLeft = 60; // फिर से 1 मिनट शुरू
+            }
+            let mins = Math.floor(timeLeft / 60);
+            let secs = timeLeft % 60;
+            timerElement.innerText = `0${mins}:${secs < 10 ? '0' + secs : secs}`;
+            timeLeft--;
+        }, 1000);
+
+        function bet(type) {
+            if (balance < 10) { alert("बैलेंस कम है!"); return; }
+            currentBet = type;
+            document.getElementById('bet-info').innerText = "आपने " + type + " पर ₹10 लगाए हैं।";
+        }
+
+        function calculateResult() {
+            const colors = ['Red', 'Green', 'Violet'];
+            const sizes = ['Big', 'Small'];
+            
+            const winColor = colors[Math.floor(Math.random() * colors.length)];
+            const winSize = sizes[Math.floor(Math.random() * sizes.length)];
+
+            if (currentBet === winColor || currentBet === winSize) {
+                balance += 20;
+                alert(`जीते! परिणाम: ${winColor} - ${winSize}`);
+            } else if (currentBet != null) {
+                balance -= 10;
+                alert(`हारे! परिणाम: ${winColor} - ${winSize}`);
+            }
+
+            // इतिहास अपडेट करें
+            let log = document.getElementById('history');
+            let item = document.createElement('li');
+            item.innerText = `${winColor} | ${winSize}`;
+            log.prepend(item);
+
+            document.getElementById('balance').innerText = balance;
+            currentBet = null;
+            document.getElementById('bet-info').innerText = "";
+        }
+    </script>
+</body>
+</html>
